@@ -1,6 +1,7 @@
 package com.costales.practica.service;
 
 import com.costales.practica.entity.Vehicle;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
