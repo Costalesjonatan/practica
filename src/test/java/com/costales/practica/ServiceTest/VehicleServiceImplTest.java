@@ -45,7 +45,7 @@ public class VehicleServiceImplTest {
                 .color("Blue")
                 .build());
 
-        assertTrue(vehicleService.getVehicleById(1).getColor().equals("Blue"));
+        assertTrue(vehicleService.getVehicleByVin(1).getColor().equals("Blue"));
     }
 
     @Test

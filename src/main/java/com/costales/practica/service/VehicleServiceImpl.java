@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +22,13 @@ public class VehicleServiceImpl implements VehicleService{
     }
 
     @Override
-    public void delete(Vehicle vehicle) {
-        vehicleRepository.delete(vehicle);
+    public void deleteByVin(long vin) {
+        vehicleRepository.deleteById(vin);
     }
 
     @Override
-    public Vehicle getVehicleById(long id) {
-        return vehicleRepository.getOne(id);
+    public Vehicle getVehicleByVin(long vin) {
+        return vehicleRepository.findById(vin).get();
     }
 
     @Override
