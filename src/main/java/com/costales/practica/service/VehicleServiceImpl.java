@@ -12,6 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VehicleServiceImpl implements VehicleService{
 
+    @Autowired
     private VehicleRepository vehicleRepository;
 
     @Override

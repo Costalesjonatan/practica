@@ -1,12 +1,12 @@
 package com.costales.practica.entity;
 
+import com.costales.practica.validator.NotRepeat;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 
 @Data
 @Entity
@@ -16,31 +16,24 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Table(name = "vehicle")
 public class Vehicle {
-
     @Id()
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @NotNull
+    @NotRepeat
+    @Column(name = "vin", nullable = false)
+    private long vin;
     @NotNull
     @NotBlank
     @NotEmpty
-    @Column(name = "brand", nullable = false, unique = true)
+    @Column(name = "brand", nullable = false)
     private String brand;
     @NotNull
     @NotBlank
     @NotEmpty
-    @Column(name = "model", nullable = false, unique = true)
+    @Column(name = "model", nullable = false)
     private String model;
     @NotNull
     @NotBlank
     @NotEmpty
-    @Column(name = "color", nullable = false, unique = true)
+    @Column(name = "color", nullable = false)
     private String color;
-    @NotNull
-    @NotBlank
-    @NotEmpty
-    @Column(name = "manufacturingDate", nullable = false, unique = true)
-    private LocalDate manufacturingDate;
-
-
-
 }
