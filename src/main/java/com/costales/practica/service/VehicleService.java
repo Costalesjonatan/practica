@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface VehicleService {
     public Vehicle register(Vehicle vehicle);
-    public Vehicle delete(Vehicle vehicle);
+    public void delete(Vehicle vehicle);
     public Vehicle getVehicleById(long id);
     public List<Vehicle> getVehicles();
 }

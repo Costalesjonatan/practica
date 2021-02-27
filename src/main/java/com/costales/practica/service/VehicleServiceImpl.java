@@ -20,8 +20,8 @@ public class VehicleServiceImpl implements VehicleService{
     }
 
     @Override
-    public Vehicle delete(Vehicle vehicle) {
-        return null;
+    public void delete(Vehicle vehicle) {
+        vehicleRepository.delete(vehicle);
     }
 
     @Override
@@ -31,6 +31,6 @@ public class VehicleServiceImpl implements VehicleService{
 
     @Override
     public List<Vehicle> getVehicles() {
-        return null;
+        return vehicleRepository.findAll();
     }
 }
