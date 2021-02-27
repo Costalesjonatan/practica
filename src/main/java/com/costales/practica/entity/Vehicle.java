@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Data
 @Entity
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "vehicle")

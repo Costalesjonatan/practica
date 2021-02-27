@@ -3,6 +3,7 @@ package com.costales.practica.service;
 import com.costales.practica.entity.Vehicle;
 import com.costales.practica.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class VehicleServiceImpl implements VehicleService{
 
     @Override
     public Vehicle register(Vehicle vehicle) {
-        return null;
+        return vehicleRepository.save(vehicle);
     }
 
     @Override
@@ -24,7 +25,7 @@ public class VehicleServiceImpl implements VehicleService{
     }
 
     @Override
-    public Vehicle getVehicle(long id) {
+    public Vehicle getVehicleById(long id) {
         return null;
     }
 
