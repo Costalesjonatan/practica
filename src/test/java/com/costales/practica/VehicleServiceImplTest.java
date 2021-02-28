@@ -15,7 +15,9 @@ import static org.mockito.Mockito.*;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -30,16 +32,14 @@ public class VehicleServiceImplTest {
 
     private final HashMap<Long,Vehicle> vehicleHashMap = new HashMap<>();
 
+    private List<Vehicle> vehicles;
+
     private Vehicle vehicle;
 
     @Test
     public void shouldCreateAVehicle(){
-        vehicle = givenVehicle();
 
-        doAnswer(invocation -> {
-            vehicleHashMap.put(vehicle.getVin(), vehicle);
-            return vehicle;
-        }).when(vehicleRepository).save(vehicle);
+        mockConfiguration();
 
         vehicleService.register(vehicle);
 
@@ -48,16 +48,8 @@ public class VehicleServiceImplTest {
 
     @Test
     public void shouldGetAVehicleByID(){
-        vehicle = givenVehicle();
 
-        doAnswer(invocation -> {
-            vehicleHashMap.put(vehicle.getVin(), vehicle);
-            return vehicle;
-        }).when(vehicleRepository).save(vehicle);
-
-        doAnswer(invocation -> Optional.of(vehicleHashMap.get(vehicle.getVin())))
-                .when(vehicleRepository)
-                .findById(anyLong());
+        mockConfiguration();
 
         vehicleService.register(vehicle);
 
@@ -66,16 +58,8 @@ public class VehicleServiceImplTest {
 
     @Test
     public void shouldDeleteAVehicle(){
-        vehicle = givenVehicle();
 
-        doAnswer(invocation -> {
-            vehicleHashMap.put(vehicle.getVin(), vehicle);
-            return vehicle;
-        }).when(vehicleRepository).save(vehicle);
-
-        doAnswer(invocation -> vehicleHashMap.remove(vehicle.getVin()))
-                .when(vehicleRepository)
-                .deleteById(anyLong());
+        mockConfiguration();
 
         vehicleService.register(vehicle);
         assertNotNull(vehicleHashMap.get(vehicle.getVin()));
@@ -86,6 +70,36 @@ public class VehicleServiceImplTest {
     @Test
     public void ShouldGetAlVehicles(){
 
+        mockConfiguration();
+
+        vehicles.forEach(vehicle1 -> vehicleService.register(vehicle1));
+
+        assertEquals(vehicleService.getVehicles().size(), 3);
+        assertEquals(vehicleService.getVehicles().get(0).getColor(), "Blue");
+        assertEquals(vehicleService.getVehicles().get(1).getModel(), "Kuga");
+        assertEquals(vehicleService.getVehicles().get(2).getBrand(), "TitanummFord");
+    }
+
+    private void mockConfiguration(){
+
+        vehicle = givenVehicle();
+
+        vehicles = givenAListOfVehicles();
+
+        doAnswer(invocation -> {
+            vehicleHashMap.put(vehicle.getVin(), vehicle);
+            return vehicle;
+        }).when(vehicleRepository).save(vehicle);
+
+        doAnswer(invocation -> Optional.of(vehicleHashMap.get(vehicle.getVin())))
+                .when(vehicleRepository)
+                .findById(anyLong());
+
+        doAnswer(invocation -> vehicleHashMap.remove(vehicle.getVin()))
+                .when(vehicleRepository)
+                .deleteById(anyLong());
+
+        doAnswer(invocation -> vehicles).when(vehicleRepository).findAll();
     }
 
     private Vehicle givenVehicle(){
@@ -95,5 +109,32 @@ public class VehicleServiceImplTest {
                 .model("Mustang")
                 .color("Blue")
                 .build();
+    }
+
+    private List<Vehicle> givenAListOfVehicles(){
+        vehicles = new ArrayList<>();
+
+        vehicles.add(Vehicle.builder()
+                .vin(1)
+                .brand("Ford")
+                .model("Mustang")
+                .color("Blue")
+                .build());
+
+        vehicles.add(Vehicle.builder()
+                .vin(2)
+                .brand("Ford")
+                .model("Kuga")
+                .color("Red")
+                .build());
+
+        vehicles.add(Vehicle.builder()
+                .vin(3)
+                .brand("TitanummFord")
+                .model("Ecosport")
+                .color("White")
+                .build());
+
+        return vehicles;
     }
 }
