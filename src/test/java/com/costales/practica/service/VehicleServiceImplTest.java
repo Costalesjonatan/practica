@@ -1,8 +1,7 @@
-package com.costales.practica;
+package com.costales.practica.service;
 
 import com.costales.practica.entity.Vehicle;
 import com.costales.practica.repository.VehicleRepository;
-import com.costales.practica.service.VehicleServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +24,7 @@ public class VehicleServiceImplTest {
     private VehicleRepository vehicleRepository;
     @InjectMocks
     private VehicleServiceImpl vehicleService;
-    private final HashMap<Long, Vehicle> vehicleHashMap = new HashMap<>();
+    private HashMap<Long, Vehicle> vehicleHashMap;
     private List<Vehicle> vehicles;
     private Vehicle vehicle;
 
@@ -63,6 +62,7 @@ public class VehicleServiceImplTest {
     }
 
     private void mockConfiguration() {
+        vehicleHashMap = new HashMap<>();
         vehicle = givenVehicle();
         vehicles = givenAListOfVehicles();
 
@@ -80,6 +80,7 @@ public class VehicleServiceImplTest {
                 .deleteById(anyLong());
 
         doAnswer(invocation -> vehicles).when(vehicleRepository).findAll();
+
     }
 
     private Vehicle givenVehicle() {

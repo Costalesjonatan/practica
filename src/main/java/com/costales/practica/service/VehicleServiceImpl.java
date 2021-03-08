@@ -3,16 +3,14 @@ package com.costales.practica.service;
 import com.costales.practica.entity.Vehicle;
 import com.costales.practica.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class VehicleServiceImpl implements VehicleService{
+public class VehicleServiceImpl implements VehicleService {
 
-    @Autowired
-    private VehicleRepository vehicleRepository;
+    private final VehicleRepository vehicleRepository;
 
     @Override
     public Vehicle register(Vehicle vehicle) {
