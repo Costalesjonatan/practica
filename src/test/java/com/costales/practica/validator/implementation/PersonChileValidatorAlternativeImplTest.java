@@ -93,20 +93,6 @@ class PersonChileValidatorAlternativeImplTest {
     }
 
     @Test
-    public void validateIdentityOfPersonRutWhitIncorrectBusinessNanme() {
-        PersonTO invalidPersonRut =  PersonTO.builder()
-                .documentType(2)
-                .businessName("SA")
-                .build();
-        Throwable exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateIdentity(invalidPersonRut));
-        assertEquals("The Business Name field is not valid: SA", exception.getMessage());
-
-        invalidPersonRut.setBusinessName("aaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaa");
-        exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateIdentity(invalidPersonRut));
-        assertEquals("The Business Name field is not valid: aaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaa", exception.getMessage());
-    }
-
-    @Test
     public void validatedCorrectIdentityOfPersonRun() throws Exception {
         PersonTO validPersonRun =  PersonTO.builder()
                 .documentType(1)
@@ -126,7 +112,25 @@ class PersonChileValidatorAlternativeImplTest {
                 .build();
         Throwable exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateIdentity(invalidPersonRun));
         assertEquals("Any of the following fields is not valid for a physical person: Business name: Programación S.A., Name: Alejandro, Last name: DelaCoste", exception.getMessage());
+    }
 
+    @Test
+    public void validateIdentityOfPersonRutWithIncorrectBusinessNAme(){
+        PersonTO invalidPersonRut =  PersonTO.builder()
+                .documentType(2)
+                .businessName("23435346542")
+                .build();
+
+        Throwable exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateIdentity(invalidPersonRut));
+        assertEquals("The Business Name field is not valid: 23435346542", exception.getMessage());
+
+        invalidPersonRut.setBusinessName("Costales S.A. 25str");
+        exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateIdentity(invalidPersonRut));
+        assertEquals("The Business Name field is not valid: Costales S.A. 25str", exception.getMessage());
+
+        invalidPersonRut.setBusinessName("25str Sa. !");
+        exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateIdentity(invalidPersonRut));
+        assertEquals("The Business Name field is not valid: 25str Sa. !", exception.getMessage());
     }
 
     @Test
@@ -143,23 +147,7 @@ class PersonChileValidatorAlternativeImplTest {
         exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateIdentity(invalidPersonRun));
         assertEquals("Any of the following fields is not valid for a physical person: Business name: null, Name: null, Last name: DelaCoste", exception.getMessage());
 
-        invalidPersonRun.setName("Al");
-        exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateIdentity(invalidPersonRun));
-        assertEquals("The Name field is not valid: Al", exception.getMessage());
-
-        invalidPersonRun.setName("Alejandrooo");
-        exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateIdentity(invalidPersonRun));
-        assertEquals("The Name field is not valid: Alejandrooo", exception.getMessage());
-
         invalidPersonRun.setName("Alejandro");
-        invalidPersonRun.setLastName("De");
-        exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateIdentity(invalidPersonRun));
-        assertEquals("The LastName field is not valid: De", exception.getMessage());
-
-        invalidPersonRun.setLastName("DelaCosteei");
-        exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateIdentity(invalidPersonRun));
-        assertEquals("The LastName field is not valid: DelaCosteei", exception.getMessage());
-
         invalidPersonRun.setLastName("De.Lacost");
         exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateIdentity(invalidPersonRun));
         assertEquals("The LastName field is not valid: De.Lacost", exception.getMessage());
@@ -250,25 +238,25 @@ class PersonChileValidatorAlternativeImplTest {
     @Test
     public void validateDateBirthWhitInvalidMinDay() {
         Throwable exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateBirthDate("00/09/1990", 1));
-        assertEquals("The birth date is not valid, Birth date: 00/09/1990", exception.getMessage());
+        assertEquals("The date of birth field is not valid: 00/09/1990", exception.getMessage());
     }
 
     @Test
     public void validateDateBirthWhitInvalidMaxDay() {
         Throwable exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateBirthDate("32/09/1990", 1));
-        assertEquals("The birth date is not valid, Birth date: 32/09/1990", exception.getMessage());
+        assertEquals("The date of birth field is not valid: 32/09/1990", exception.getMessage());
     }
 
     @Test
     public void validateDateBirthWhitInvalidMonth() {
         Throwable exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateBirthDate("01/00/1990", 1));
-        assertEquals("The birth date is not valid, Birth date: 01/00/1990", exception.getMessage());
+        assertEquals("The date of birth field is not valid: 01/00/1990", exception.getMessage());
     }
 
     @Test
     public void validateDateBirthWhitInvalidMinMonth() {
         Throwable exception = assertThrows(Exception.class, () -> personChileValidatorAlternative.validateBirthDate("01/00/1990", 1));
-        assertEquals("The birth date is not valid, Birth date: 01/00/1990", exception.getMessage());
+        assertEquals("The date of birth field is not valid: 01/00/1990", exception.getMessage());
     }
 
     @Test

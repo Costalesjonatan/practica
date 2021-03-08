@@ -26,7 +26,7 @@ public class PersonChileValidatorImpl implements PersonChileValidator {
         } else if(personTO.getDocumentType() == 1){
             if(personTO.getLastName() == null || personTO.getName() == null || personTO.getBusinessName() != null)
                 throw new Exception("Any of the following fields is not valid for a physical person: " + "Business name: " + personTO.getBusinessName() + ", Name: " + personTO.getName() + ", Last name: "  + personTO.getLastName());
-            Pattern pattern = Pattern.compile("^[a-zA-Z]+$");
+            Pattern pattern = Pattern.compile("^[a-zA-Z]+\\s[a-zA-Z]+$");
             Matcher matcher = pattern.matcher(personTO.getName());
             if(!matcher.matches())
                 throw new Exception("The Name field is not valid: " + personTO.getName());

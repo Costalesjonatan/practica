@@ -3,7 +3,6 @@ package com.costales.practica.validator.implementation;
 import com.costales.practica.to.PersonTO;
 import com.costales.practica.validator.PersonChileValidatorAlternative;
 import lombok.RequiredArgsConstructor;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -16,96 +15,99 @@ public class PersonChileValidatorAlternativeImpl implements PersonChileValidator
 
     public boolean validatePerson(PersonTO personTo) throws Exception {
         if(personTo == null)
-            throw new Exception("The person object to validate cannot be null.");
+            throwException("The person object to validate cannot be null.");
         return validateIdentity(personTo) && validateDocument(personTo.getDocumentNumber(), personTo.getDocumentType())  && validateBirthDate(personTo.getBirthDate(), personTo.getDocumentType());
     }
 
     public boolean validateIdentity(PersonTO personTO) throws Exception {
         validateDocumentType(personTO.getDocumentType());
-        if(personTO.getDocumentType() == 2){
-            if(personTO.getBusinessName() == null || personTO.getLastName() != null || personTO.getName() != null)
-                throw new Exception("Any of the following fields is not valid for business person: " + "Business name: " + personTO.getBusinessName() + ", Name: " + personTO.getName() + ", Last name: "  + personTO.getLastName());
-            Pattern pattern = Pattern.compile("^(?=.{3,50}$)[A-ZÁÉÍÓÚa-zñáéíóú\\. ']+$");
-            Matcher matcher = pattern.matcher(personTO.getBusinessName());
-            if(!matcher.matches())
-                throw new Exception("The Business Name field is not valid: " + personTO.getBusinessName());
-        } else if(personTO.getDocumentType() == 1){
-            if(personTO.getLastName() == null || personTO.getName() == null || personTO.getBusinessName() != null)
-                throw new Exception("Any of the following fields is not valid for a physical person: " + "Business name: " + personTO.getBusinessName() + ", Name: " + personTO.getName() + ", Last name: "  + personTO.getLastName());
-            Pattern pattern = Pattern.compile("^(?=.{3,10}$)[a-zA-Z]+$");
-            Matcher matcher = pattern.matcher(personTO.getName());
-            if(!matcher.matches())
-                throw new Exception("The Name field is not valid: " + personTO.getName());
-            matcher = pattern.matcher(personTO.getLastName());
-            if(!matcher.matches())
-                throw new Exception("The LastName field is not valid: " + personTO.getLastName());
-        }
+        if(personTO.getDocumentType() == 2)
+            validateRutName(personTO.getName(), personTO.getLastName(), personTO.getBusinessName());
+        if(personTO.getDocumentType() == 1)
+            validateRunNameAndLastName(personTO.getName(),  personTO.getLastName(), personTO.getBusinessName());
         return true;
+    }
+
+    private void validateRutName(String name, String lastName, String businessName) throws Exception {
+        if(businessName == null || lastName != null || name != null)
+            throwException("Any of the following fields is not valid for business person: " + "Business name: " + businessName + ", Name: " + name + ", Last name: "  + lastName);
+        if(syntaxIsNotValid("^[A-ZÁÉÍÓÚa-zñáéíóú\\. ']+$", businessName))
+            throwException("The Business Name field is not valid: " + businessName);
+    }
+
+    private void validateRunNameAndLastName(String name, String lastName, String businessName) throws Exception {
+        if(lastName == null || name == null || businessName != null)
+            throwException("Any of the following fields is not valid for a physical person: " + "Business name: " + businessName + ", Name: " + name + ", Last name: "  + lastName);
+        if(syntaxIsNotValid("^[a-zA-Z]+( [a-zA-Z])*$", name))
+            throwException("The Name field is not valid: " + name);
+        if(syntaxIsNotValid("^[a-zA-Z]+( [a-zA-Z])*$", lastName))
+            throwException("The LastName field is not valid: " + lastName);
     }
 
     public boolean validateDocumentType(Integer documentType) throws Exception {
         if(documentType == null || (documentType < 1 || documentType > 2))
-            throw new Exception("The document type field does not correspond to a valid person from Chile; document type: " + documentType);
+            throwException("The document type field does not correspond to a valid person from Chile; document type: " + documentType);
         return true;
     }
 
     public boolean validateDocument(String nroDocument, Integer documentType) throws Exception {
         validateDocumentType(documentType);
         if(nroDocument == null)
-            throw new Exception("The document number field cannot be null.");
-        Pattern pattern = Pattern.compile("^(?=.{9}$)([0-9]){8}[a-zA-Z0-9]$");
-        Matcher matcher = pattern.matcher(nroDocument);
-        if(!matcher.matches())
-            throw new Exception("The document number field is not valid: " + nroDocument);
+            throwException("The document number field cannot be null.");
+        if(syntaxIsNotValid("^(?=.{9}$)([0-9]){8}[a-zA-Z0-9]$", nroDocument))
+            throwException("The document number field is not valid: " + nroDocument);
         return true;
     }
 
     public boolean validateBirthDate(String birthDate, Integer documentType) throws Exception {
         validateDocumentType(documentType);
         if(documentType == 1){
-            if(birthDate == null)
-                throw new Exception("The birth date field cannot be null.");
-            Pattern pattern = Pattern.compile("^\\d{2}\\/\\d{2}\\/\\d{4}$");
-            Matcher matcher = pattern.matcher(birthDate);
-            if(!matcher.matches())
-                throw new Exception("The birth date is not valid, Birth date: " + birthDate);
-            DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("dd/MM/yyyy");
-            try{
-                dateTimeFormat.parseDateTime(birthDate);
-            } catch (Exception e){
-                throw new Exception("The date of birth field is not valid: " + birthDate);
-            }
+            validateDate(birthDate);
             return true;
         }
         if(documentType == 2 && birthDate != null)
-            throw new Exception("The birthday date field must be null.");
+            throwException("The birthday date field must be null.");
         return true;
     }
 
-    //testealo
-    public boolean validateBornDate(String birthDate, Integer bornDate, Integer documentType) throws Exception {
+    private void validateDate(String date) throws Exception {
+        if(date == null)
+            throwException("The birth date field cannot be null.");
+        if(syntaxIsNotValid("^\\d{2}\\/\\d{2}\\/\\d{4}$", date))
+            throwException("The birth date is not valid, Birth date: " + date);
+        DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("dd/MM/yyyy");
+        try{
+            dateTimeFormat.parseDateTime(date);
+        } catch (Exception e){
+            throwException("The date of birth field is not valid: " + date);
+        }
+    }
+
+    private boolean syntaxIsNotValid(String regex, String value){
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(value);
+        return !matcher.matches();
+    }
+
+    private void throwException(String message) throws Exception {
+        throw new Exception(message);
+    }
+
+    private boolean validateBornDate(String birthDate, Integer bornDate, Integer documentType) throws Exception {
         validateDocumentType(documentType);
         if(documentType == 1){
             if(birthDate == null)
-                throw new Exception("The birth date field cannot be null.");
+                throwException("The birth date field cannot be null.");
             if(bornDate == null)
-                throw new Exception("The born date field cannot be null.");
+                throwException("The born date field cannot be null.");
             if((LocalDateTime.now().getYear() - bornDate) > 115)
-                throw new Exception("the date selection must be less than 115 years old.");
+                throwException("the date selection must be less than 115 years old.");
             if((LocalDateTime.now().getYear() - bornDate) < 18)
-                throw new Exception("the selection of the date must be older than 18 years.");
-            Pattern pattern = Pattern.compile("^\\d{2}\\/\\d{2}\\/\\d{4}$");
-            Matcher matcher = pattern.matcher(birthDate);
-            if(!matcher.matches())
-                throw new Exception("The birth date is not valid, Birth date: " + birthDate);
+                throwException("the selection of the date must be older than 18 years.");
+            validateDate(birthDate);
             String dayAndMonth = birthDate.substring(0,6);
             String bornDateString = dayAndMonth + bornDate.toString();
-            DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("dd/MM/yyyy");
-            try{
-                dateTimeFormat.parseDateTime(bornDateString);
-            } catch (Exception e){
-                throw new Exception("The date of birth field is not valid: " + bornDateString);
-            }
+            validateDate(bornDateString);
         }
         if(documentType == 2)
             if(birthDate == null)
@@ -113,12 +115,5 @@ public class PersonChileValidatorAlternativeImpl implements PersonChileValidator
             if(bornDate == null)
                 throw new Exception("The born date field must be null.");
         return true;
-    }
-
-    //main de pruebas rapidas
-    public static void main(String[] args) throws Exception {
-        PersonChileValidatorAlternativeImpl personChileValidator = new PersonChileValidatorAlternativeImpl();
-
-        System.out.println(personChileValidator.validateBornDate("29/02/9999", 1989, 1));
     }
 }

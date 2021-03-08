@@ -8,5 +8,4 @@ public interface PersonChileValidatorAlternative {
     boolean validateDocument(String nroDocument, Integer documentType) throws Exception;
     boolean validateBirthDate(String birthDate, Integer documentType) throws Exception;
     boolean validateDocumentType(Integer documentType) throws Exception;
-    boolean validateBornDate(String birthDate, Integer bornDate, Integer documentType) throws Exception;
 }

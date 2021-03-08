@@ -56,7 +56,7 @@ public class PersonPeruValidatorImpl implements PersonPeruValidator {
         }
         if(documentType == 2){
             Pattern pattern = Pattern.compile("^[0-9]{11}$");
-            //regex alternativa que acepta RUCs que empiecen colo con 10,20,15,16,17 (10|20|15|16|17)[0-9]{9}
+            //regex alternativa que acepta RUCs que empiecen solo con 10,20,15,16,17 (10|20|15|16|17)[0-9]{9}
             Matcher matcher = pattern.matcher(nroDocument);
             if(!matcher.matches())
                 throw new Exception("The document number field is not valid for a business person: " + nroDocument);
