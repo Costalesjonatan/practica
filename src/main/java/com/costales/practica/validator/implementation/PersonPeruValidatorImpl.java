@@ -2,6 +2,8 @@ package com.costales.practica.validator.implementation;
 
 import com.costales.practica.to.PersonTO;
 import com.costales.practica.validator.PersonPeruValidator;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,14 +18,14 @@ public class PersonPeruValidatorImpl implements PersonPeruValidator {
         if(personTO.getDocumentType() == 2){
             if(personTO.getBusinessName() == null || personTO.getLastName() != null || personTO.getName() != null)
                 throw new Exception("Any of the following fields is not valid for business person: " + "Business name: " + personTO.getBusinessName() + ", Name: " + personTO.getName() + ", Last name: "  + personTO.getLastName());
-            Pattern pattern = Pattern.compile("^(?=.{3,50}$)[A-ZÁÉÍÓÚa-zñáéíóú\\. ']+$");
+            Pattern pattern = Pattern.compile("^[A-ZÁÉÍÓÚa-zñáéíóú\\. ']+$");
             Matcher matcher = pattern.matcher(personTO.getBusinessName());
             if(!matcher.matches())
                 throw new Exception("The Business Name field is not valid: " + personTO.getBusinessName());
         } else if(personTO.getDocumentType() == 1 || personTO.getDocumentType() == 3){
             if(personTO.getLastName() == null || personTO.getName() == null || personTO.getBusinessName() != null)
                 throw new Exception("Any of the following fields is not valid for a physical person: " + "Business name: " + personTO.getBusinessName() + ", Name: " + personTO.getName() + ", Last name: "  + personTO.getLastName());
-            Pattern pattern = Pattern.compile("(?=.{3,10}$)[a-zA-Z]+");
+            Pattern pattern = Pattern.compile("^[a-zA-Z]+$");
             Matcher matcher = pattern.matcher(personTO.getName());
             if(!matcher.matches())
                 throw new Exception("The Name field is not valid: " + personTO.getName());
@@ -54,6 +56,7 @@ public class PersonPeruValidatorImpl implements PersonPeruValidator {
         }
         if(documentType == 2){
             Pattern pattern = Pattern.compile("^[0-9]{11}$");
+            //regex alternativa que acepta RUCs que empiecen colo con 10,20,15,16,17 (10|20|15|16|17)[0-9]{9}
             Matcher matcher = pattern.matcher(nroDocument);
             if(!matcher.matches())
                 throw new Exception("The document number field is not valid for a business person: " + nroDocument);
@@ -64,13 +67,19 @@ public class PersonPeruValidatorImpl implements PersonPeruValidator {
     @Override
     public boolean validateBirthDate(String birthDate, Integer documentType) throws Exception {
         validateDocumentType(documentType);
-        if(documentType == 1){
+        if(documentType == 1 || documentType == 3){
             if(birthDate == null)
                 throw new Exception("The birth date field cannot be null.");
-            Pattern pattern = Pattern.compile("^(0[1-9]|1[0-9]|2[0-9]|3[0-1])(\\/)(0[1-9]|1[0-2])\\2(\\d{4})$");
+            Pattern pattern = Pattern.compile("^\\d{2}\\/\\d{2}\\/\\d{4}$");
             Matcher matcher = pattern.matcher(birthDate);
             if(!matcher.matches())
                 throw new Exception("The birth date is not valid, Birth date: " + birthDate);
+            DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try{
+                dateTimeFormat.parseDateTime(birthDate);
+            } catch (Exception e){
+                throw new Exception("The date of birth field is not valid: " + birthDate);
+            }
             return true;
         }
         if(documentType == 2 && birthDate != null)

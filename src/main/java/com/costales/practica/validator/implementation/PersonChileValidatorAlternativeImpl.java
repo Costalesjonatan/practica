@@ -32,7 +32,7 @@ public class PersonChileValidatorAlternativeImpl implements PersonChileValidator
         } else if(personTO.getDocumentType() == 1){
             if(personTO.getLastName() == null || personTO.getName() == null || personTO.getBusinessName() != null)
                 throw new Exception("Any of the following fields is not valid for a physical person: " + "Business name: " + personTO.getBusinessName() + ", Name: " + personTO.getName() + ", Last name: "  + personTO.getLastName());
-            Pattern pattern = Pattern.compile("(?=.{3,10}$)[a-zA-Z]+");
+            Pattern pattern = Pattern.compile("^(?=.{3,10}$)[a-zA-Z]+$");
             Matcher matcher = pattern.matcher(personTO.getName());
             if(!matcher.matches())
                 throw new Exception("The Name field is not valid: " + personTO.getName());
@@ -65,10 +65,16 @@ public class PersonChileValidatorAlternativeImpl implements PersonChileValidator
         if(documentType == 1){
             if(birthDate == null)
                 throw new Exception("The birth date field cannot be null.");
-            Pattern pattern = Pattern.compile("^(0[1-9]|1[0-9]|2[0-9]|3[0-1])(\\/)(0[1-9]|1[0-2])\\2(\\d{4})$");
+            Pattern pattern = Pattern.compile("^\\d{2}\\/\\d{2}\\/\\d{4}$");
             Matcher matcher = pattern.matcher(birthDate);
             if(!matcher.matches())
                 throw new Exception("The birth date is not valid, Birth date: " + birthDate);
+            DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try{
+                dateTimeFormat.parseDateTime(birthDate);
+            } catch (Exception e){
+                throw new Exception("The date of birth field is not valid: " + birthDate);
+            }
             return true;
         }
         if(documentType == 2 && birthDate != null)
@@ -96,7 +102,7 @@ public class PersonChileValidatorAlternativeImpl implements PersonChileValidator
             String bornDateString = dayAndMonth + bornDate.toString();
             DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("dd/MM/yyyy");
             try{
-                DateTime dateTime = dateTimeFormat.parseDateTime(bornDateString);
+                dateTimeFormat.parseDateTime(bornDateString);
             } catch (Exception e){
                 throw new Exception("The date of birth field is not valid: " + bornDateString);
             }
@@ -110,9 +116,9 @@ public class PersonChileValidatorAlternativeImpl implements PersonChileValidator
     }
 
     //main de pruebas rapidas
-    /*public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         PersonChileValidatorAlternativeImpl personChileValidator = new PersonChileValidatorAlternativeImpl();
 
-        System.out.println(personChileValidator.validateBornDate("24/10/9999", 9999, 1));
-    }*/
+        System.out.println(personChileValidator.validateBornDate("29/02/9999", 1989, 1));
+    }
 }
